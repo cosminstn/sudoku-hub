@@ -18,6 +18,7 @@ class _GameMenuState extends State<GameMenu> {
   Position focussed;
   bool win = false;
   bool finished = false;
+  Future checkGameCreated;
 
   _GameMenuState() {
     // board.load().then((loaded) {
@@ -34,9 +35,13 @@ class _GameMenuState extends State<GameMenu> {
     //       resumeCallBack: () {}));
     // });
     // createNewBoard();
+    checkGameCreated = checkGameInitializedAsync();
   }
 
-  Future<void> createNewBoard() async {
+  Future<void> checkGameInitializedAsync() async {
+    if (game != null) {
+      return;
+    }
     game = await generate(attempts: 5);
     focussed = null;
     win = false;
@@ -72,7 +77,7 @@ class _GameMenuState extends State<GameMenu> {
           Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(50.0),
-              child: Text(!win ? "SimpleDoku" : "Congratulations, you won!",
+              child: Text(!win ? "Sudoku Plus" : "Congratulations, you won!",
                   style: TextStyle(
                       fontSize: 20, color: win ? Colors.green : null)),
             )
@@ -86,97 +91,112 @@ class _GameMenuState extends State<GameMenu> {
                       const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
                   child: IconButton(
                     icon: Icon(Icons.autorenew),
-                    onPressed: () => setState(() => createNewBoard()),
+                    onPressed: () =>
+                        setState(() async => await checkGameInitializedAsync()),
                   ))
             ],
           ),
-          // Game board
-          game == null
-              ? Center(child: CircularProgressIndicator())
-              : Center(
-                  child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: game.board.matrix
-                          .map(
-                            (list) => Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: list
-                                    .map(
-                                      (field) => Container(
-                                          child: InkWell(
-                                            onTap: () {
-                                              setState(() {
-                                                if (focussed == field)
-                                                  focussed = null;
-                                                else
-                                                  focussed = field;
-                                              });
-                                            },
-                                            child: Center(
-                                                child: Text(
-                                              field.empty()
-                                                  ? ""
-                                                  : field.value.toString(),
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  color: field.initial
-                                                      ? Theme.of(context)
-                                                          .primaryColor
-                                                      : null),
+          Center(
+            child:
+                // Game board
+                FutureBuilder<void>(
+              future: checkGameCreated,
+              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return new CircularProgressIndicator();
+                  case ConnectionState.done:
+                    return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: game.board.matrix
+                            .map(
+                              (list) => Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: list
+                                      .map(
+                                        (field) => Container(
+                                            child: InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  if (focussed == field)
+                                                    focussed = null;
+                                                  else
+                                                    focussed = field;
+                                                });
+                                              },
+                                              child: Center(
+                                                  child: Text(
+                                                field.empty()
+                                                    ? ""
+                                                    : field.value.toString(),
+                                                style: TextStyle(
+                                                    fontSize: 30,
+                                                    color: field.initial
+                                                        ? Theme.of(context)
+                                                            .primaryColor
+                                                        : null),
+                                              )),
+                                            ),
+                                            width: widget.fieldSize,
+                                            height: widget.fieldSize,
+                                            decoration: BoxDecoration(
+                                              color: () {
+                                                if (focussed == field) {
+                                                  return Theme.of(context)
+                                                      .primaryColor;
+                                                } else {
+                                                  if (field.value !=
+                                                      game
+                                                          .solution
+                                                          .matrix[field.x]
+                                                              [field.y]
+                                                          .value) {
+                                                    if (field.initial) {
+                                                      return Colors.yellow;
+                                                    } else {
+                                                      return Colors.red;
+                                                    }
+                                                  } else
+                                                    return Colors.white
+                                                        .withAlpha(50);
+                                                }
+                                              }(),
+                                              border: Border(
+                                                  left: BorderSide(
+                                                      color: widget.borderColor,
+                                                      width: field.x % 3 == 0
+                                                          ? 2
+                                                          : 0),
+                                                  right: BorderSide(
+                                                      color: widget.borderColor,
+                                                      width: field.x ==
+                                                              Board.SIZE_BASE -
+                                                                  1
+                                                          ? 2
+                                                          : 0),
+                                                  top: BorderSide(
+                                                      color: widget.borderColor,
+                                                      width: field.y % 3 == 0
+                                                          ? 2
+                                                          : 0),
+                                                  bottom: BorderSide(
+                                                      color: widget.borderColor,
+                                                      width: field.y ==
+                                                              Board.SIZE_BASE -
+                                                                  1
+                                                          ? 2
+                                                          : 0)),
                                             )),
-                                          ),
-                                          width: widget.fieldSize,
-                                          height: widget.fieldSize,
-                                          decoration: BoxDecoration(
-                                            color: () {
-                                              if (focussed == field) {
-                                                return Theme.of(context)
-                                                    .primaryColor;
-                                              } else {
-                                                if (field.value !=
-                                                    game
-                                                        .solution
-                                                        .matrix[field.x]
-                                                            [field.y]
-                                                        .value) {
-                                                  if (field.initial) {
-                                                    return Colors.yellow;
-                                                  } else {
-                                                    return Colors.red;
-                                                  }
-                                                } else
-                                                  return Colors.white
-                                                      .withAlpha(50);
-                                              }
-                                            }(),
-                                            border: Border(
-                                                left: BorderSide(
-                                                    color: widget.borderColor,
-                                                    width: field.x % 3 == 0
-                                                        ? 2
-                                                        : 0),
-                                                right: BorderSide(
-                                                    color: widget.borderColor,
-                                                    width: field.x ==
-                                                            Board.SIZE_BASE - 1
-                                                        ? 2
-                                                        : 0),
-                                                top: BorderSide(
-                                                    color: widget.borderColor,
-                                                    width: field.y % 3 == 0
-                                                        ? 2
-                                                        : 0),
-                                                bottom: BorderSide(
-                                                    color: widget.borderColor,
-                                                    width: field.y ==
-                                                            Board.SIZE_BASE - 1
-                                                        ? 2
-                                                        : 0)),
-                                          )),
-                                    )
-                                    .toList()),
-                          )
-                          .toList())),
+                                      )
+                                      .toList()),
+                            )
+                            .toList());
+                  default:
+                    return Text('hello');
+                }
+              },
+            ),
+          ),
           // Number pad
           (focussed != null
               ? Column(mainAxisAlignment: MainAxisAlignment.end, children: <

@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SimpleDoku',
+      title: 'Sudoku Plus',
       theme: ThemeData(
         primarySwatch: Colors.cyan,
       ),
@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("SimpleDoku"),
+          title: Text("Sudoku Plus"),
         ),
         body: Center(
           child: Row(
