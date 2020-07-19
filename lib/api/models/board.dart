@@ -116,23 +116,23 @@ class Region {
 }
 
 class Position {
-  final int x, y;
+  final int row, col;
   final int value;
   final bool initial;
 
-  Position(this.x, this.y, this.value, {this.initial = false})
-      : assert(x >= 0 && x < 9),
-        assert(y >= 0 && y < 9),
+  Position(this.row, this.col, this.value, {this.initial = false})
+      : assert(row >= 0 && row < 9),
+        assert(col >= 0 && col < 9),
         assert(value >= 0 && value <= 9);
 
-  Position.empty(int x, int y, {bool initial = false})
-      : this(x, y, 0, initial: initial);
+  Position.empty(int row, int col, {bool initial = false})
+      : this(row, col, 0, initial: initial);
 
   bool empty() {
     return value == 0;
   }
 
   Position clone() {
-    return Position(x, y, value, initial: initial);
+    return Position(row, col, value, initial: initial);
   }
 }

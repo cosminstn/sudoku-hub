@@ -144,44 +144,48 @@ class _GameMenuState extends State<GameMenu> {
                                                 if (focussed == field) {
                                                   return Theme.of(context)
                                                       .primaryColor;
-                                                } else {
-                                                  if (field.value !=
-                                                      game
-                                                          .solution
-                                                          .matrix[field.x]
-                                                              [field.y]
-                                                          .value) {
-                                                    if (field.initial) {
-                                                      return Colors.yellow;
-                                                    } else {
-                                                      return Colors.red;
-                                                    }
-                                                  } else
-                                                    return Colors.white
-                                                        .withAlpha(50);
                                                 }
+                                                if (field.empty()) {
+                                                  return Colors.white
+                                                      .withAlpha(50);
+                                                }
+
+                                                if (field.value !=
+                                                    game
+                                                        .solution
+                                                        .matrix[field.row]
+                                                            [field.col]
+                                                        .value) {
+                                                  if (field.initial) {
+                                                    return Colors.yellow;
+                                                  } else {
+                                                    return Colors.red;
+                                                  }
+                                                } else
+                                                  return Colors.white
+                                                      .withAlpha(50);
                                               }(),
                                               border: Border(
                                                   left: BorderSide(
                                                       color: widget.borderColor,
-                                                      width: field.x % 3 == 0
+                                                      width: field.col % 3 == 0
                                                           ? 2
                                                           : 0),
                                                   right: BorderSide(
                                                       color: widget.borderColor,
-                                                      width: field.x ==
+                                                      width: field.col ==
                                                               Board.SIZE_BASE -
                                                                   1
                                                           ? 2
                                                           : 0),
                                                   top: BorderSide(
                                                       color: widget.borderColor,
-                                                      width: field.y % 3 == 0
+                                                      width: field.row % 3 == 0
                                                           ? 2
                                                           : 0),
                                                   bottom: BorderSide(
                                                       color: widget.borderColor,
-                                                      width: field.y ==
+                                                      width: field.row ==
                                                               Board.SIZE_BASE -
                                                                   1
                                                           ? 2
@@ -226,11 +230,15 @@ class _GameMenuState extends State<GameMenu> {
                             onPressed: () {
                               setState(() {
                                 if (i == Board.SIZE_BASE)
-                                  game.board.matrix[focussed.x][focussed.y] =
-                                      Position.empty(focussed.x, focussed.y);
+                                  game.board.matrix[focussed.row]
+                                          [focussed.col] =
+                                      Position.empty(
+                                          focussed.row, focussed.col);
                                 else
-                                  game.board.matrix[focussed.x][focussed.y] =
-                                      Position(focussed.x, focussed.y, i + 1);
+                                  game.board.matrix[focussed.row]
+                                          [focussed.col] =
+                                      Position(
+                                          focussed.row, focussed.col, i + 1);
                                 focussed = null;
                               });
                               checkBoard();
