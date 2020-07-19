@@ -120,7 +120,8 @@ class _GameMenuState extends State<GameMenu> {
                                                 setState(() {
                                                   if (focussed == field)
                                                     focussed = null;
-                                                  else
+                                                  else if (field.empty() ||
+                                                      !field.initial)
                                                     focussed = field;
                                                 });
                                               },
@@ -202,7 +203,7 @@ class _GameMenuState extends State<GameMenu> {
             ),
           ),
           // Number pad
-          (focussed != null
+          (focussed != null && !game.win()
               ? Column(mainAxisAlignment: MainAxisAlignment.end, children: <
                   Widget>[
                   Center(
@@ -228,6 +229,12 @@ class _GameMenuState extends State<GameMenu> {
                                     style: TextStyle(fontSize: 30),
                                   )),
                             onPressed: () {
+                              if (focussed == null) {
+                                return;
+                              }
+                              if (!focussed.empty() && focussed.initial) {
+                                return;
+                              }
                               setState(() {
                                 if (i == Board.SIZE_BASE)
                                   game.board.matrix[focussed.row]
@@ -265,12 +272,6 @@ class LifecycleHandler extends WidgetsBindingObserver {
   final void Function() resumeCallBack;
   final void Function() suspendingCallBack;
 
-//  @override
-//  Future<bool> didPopRoute()
-
-//  @override
-//  void didHaveMemoryPressure()
-
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
@@ -284,16 +285,4 @@ class LifecycleHandler extends WidgetsBindingObserver {
         break;
     }
   }
-
-//  @override
-//  void didChangeLocale(Locale locale)
-
-//  @override
-//  void didChangeTextScaleFactor()
-
-//  @override
-//  void didChangeMetrics();
-
-//  @override
-//  Future<bool> didPushRoute(String route)
 }
