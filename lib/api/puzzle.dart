@@ -110,17 +110,23 @@ bool solve(Board board, PrimitiveWrapper counter,
 ///              However, if this parameter is to big than the runtime will certainly be affected.
 /// [maxTimeMillis] - It is not guaranteed that the algorithm will finish in this time, but should be really close to it.
 Future<void> _puzzle(Board board,
-    {attempts = 500, maxTimeMillis = 1000}) async {
+    {GameDifficulty difficulty = GameDifficulty.MEDIUM,
+    maxTimeMillis = 1000}) async {
   assert(board != null);
-  assert(attempts > 0);
+  assert(difficulty != null);
 
   final rnd = Random();
   // Hard stop at 17 clues.
   // Any less than that and we can't guarantee that the board will have a single solution.
   final startTime = DateTime.now();
   var passedMillis = 0;
-  while (attempts > 0 &&
-      board.getNoClues() > 17 &&
+
+  final targetNoClues = difficulty.minClues +
+      rnd.nextInt(difficulty.maxClues - difficulty.minClues + 1);
+
+  int noClues = board.getNoClues();
+  while (noClues > targetNoClues &&
+      noClues > 17 &&
       passedMillis <= maxTimeMillis) {
     // Select a random cell that is not already empty to be cleared
     var row = rnd.nextInt(9);
@@ -142,20 +148,21 @@ Future<void> _puzzle(Board board,
     if (counter.value != 1) {
       // Then the element we just removed causes the puzzle to have 2 different solutions. Rollback this change
       board.matrix[row][col] = backup;
-      // We could stop here, but we can also have another attempt with a different cell just to try to remove more numbers
-      attempts -= 1;
     }
     passedMillis = DateTime.now().difference(startTime).inMilliseconds;
+    noClues = board.getNoClues();
   }
 }
 
 /// [attempts] - The bigger this number is the more chance that the number of clues left approaces 17.
 ///              However, if this parameter is to big than the runtime will certainly be affected.
 /// [maxTimeMillis] - It is not guaranteed that the algorithm will finish in this time, but should be really close to it.
-Future<Game> generate({attempts = 500, maxTimeMillis = 1000}) async {
+Future<Game> generate(
+    {GameDifficulty difficulty = GameDifficulty.MEDIUM,
+    maxTimeMillis = 1000}) async {
   final board = _generateFilledBoard();
   final solution = board.clone();
-  await _puzzle(board, attempts: attempts, maxTimeMillis: maxTimeMillis);
+  await _puzzle(board, difficulty: difficulty, maxTimeMillis: maxTimeMillis);
 
   return Game(board, solution);
 }

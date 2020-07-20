@@ -2,8 +2,14 @@ import 'board.dart';
 
 class Game {
   final Board board, solution;
+  int _noClues;
+  Game(this.board, this.solution) {
+    _noClues = this.board.getNoClues();
+  }
 
-  Game(this.board, this.solution);
+  int get noClues {
+    return _noClues;
+  }
 
   bool win() {
     if (!board.complete()) {
@@ -17,6 +23,7 @@ class Game {
         }
       }
     }
+
     return true;
   }
 }
@@ -49,6 +56,21 @@ extension GameDifficultyExtension on GameDifficulty {
         return 31;
       case GameDifficulty.EVIL:
         return 27;
+      default:
+        return null;
+    }
+  }
+
+  String get value {
+    switch (this) {
+      case GameDifficulty.EASY:
+        return 'Easy';
+      case GameDifficulty.MEDIUM:
+        return 'Medium';
+      case GameDifficulty.HARD:
+        return 'Hard';
+      case GameDifficulty.EVIL:
+        return 'Evil';
       default:
         return null;
     }
