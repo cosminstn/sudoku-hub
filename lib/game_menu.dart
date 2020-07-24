@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -19,6 +21,8 @@ class _GameMenuState extends State<GameMenu> {
   bool win = false;
   bool finished = false;
   Future checkGameCreated;
+  DateTime _startTime;
+  String _timePassedStr;
 
   _GameMenuState() {
     // board.load().then((loaded) {
@@ -42,10 +46,22 @@ class _GameMenuState extends State<GameMenu> {
     if (game != null) {
       return;
     }
-    game = await generate(difficulty: GameDifficulty.MEDIUM);
+    game = await generate(difficulty: GameDifficulty.EASY);
     focussed = null;
     win = false;
     finished = false;
+    _startTime = DateTime.now();
+    Timer.periodic(Duration(), (timer) {
+      if (!finished && !win) {
+        final now = DateTime.now();
+        final minutes = now.difference(_startTime).inMinutes;
+        final seconds = now.difference(_startTime).inSeconds % 60;
+        setState(() {
+          _timePassedStr =
+              '${minutes < 10 ? '0' + minutes.toString() : minutes.toString()}:${seconds < 10 ? '0' + seconds.toString() : seconds.toString()}';
+        });
+      }
+    });
     print('Board initialized');
   }
 
@@ -137,7 +153,7 @@ class _GameMenuState extends State<GameMenu> {
                                 children: <Widget>[
                                   Padding(
                                       padding: EdgeInsets.fromLTRB(5, 5, 10, 5),
-                                      child: Text('Score: 30/100',
+                                      child: Text('Time: $_timePassedStr',
                                           style: TextStyle(fontSize: 17)))
                                 ],
                               )
