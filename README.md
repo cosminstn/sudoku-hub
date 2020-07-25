@@ -1,6 +1,5 @@
-# sudoku_plus
-
-A new Flutter project.
+# Sudoku Hub
+A new hub for sudoku lovers, implemented using Flutter.
 
 ## Getting Started
 
