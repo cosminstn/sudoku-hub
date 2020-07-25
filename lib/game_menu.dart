@@ -22,8 +22,15 @@ class _GameMenuState extends State<GameMenu> {
   bool finished = false;
   Future checkGameCreated;
   DateTime _startTime;
-  String _timePassedStr;
+  String _timePassedStr = '';
 
+  // #region Computed Properties
+  String get _gameDifficultyStr {
+    final diff = GameDifficultyExtension.getByNoClues(game.noClues);
+    return diff != null ? diff.value : '';
+  }
+
+  // #endregion
   _GameMenuState() {
     // board.load().then((loaded) {
     //   setState(() {
@@ -134,18 +141,13 @@ class _GameMenuState extends State<GameMenu> {
                                 children: <Widget>[
                                   Padding(
                                       padding: EdgeInsets.fromLTRB(10, 5, 5, 5),
-                                      child: Text(
-                                          'Difficulty: ' +
-                                              (GameDifficultyExtension
-                                                          .getByNoClues(
-                                                              game.noClues) !=
-                                                      null
-                                                  ? GameDifficultyExtension
-                                                          .getByNoClues(
-                                                              game.noClues)
-                                                      .value
-                                                  : null),
-                                          style: TextStyle(fontSize: 17)))
+                                      child: Row(children: [
+                                        Icon(
+                                          Icons.error_outline,
+                                        ),
+                                        Text(_gameDifficultyStr,
+                                            style: TextStyle(fontSize: 17))
+                                      ]))
                                 ],
                               ),
                               Row(
@@ -153,8 +155,11 @@ class _GameMenuState extends State<GameMenu> {
                                 children: <Widget>[
                                   Padding(
                                       padding: EdgeInsets.fromLTRB(5, 5, 10, 5),
-                                      child: Text('Time: $_timePassedStr',
-                                          style: TextStyle(fontSize: 17)))
+                                      child: Row(children: [
+                                        Icon(Icons.timer),
+                                        Text(_timePassedStr,
+                                            style: TextStyle(fontSize: 17))
+                                      ]))
                                 ],
                               )
                             ]),
