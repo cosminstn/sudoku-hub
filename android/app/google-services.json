@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "536576173180",
+    "firebase_url": "https://sharply-sudoku.firebaseio.com",
+    "project_id": "sharply-sudoku",
+    "storage_bucket": "sharply-sudoku.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536576173180:android:9ee7f25cd16110ac2b95f9",
+        "android_client_info": {
+          "package_name": "tech.sharply.sudoku_hub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "536576173180-t0hlja9o9drl9apf3qqsshih4hgt13ph.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tech.sharply.sudoku_hub",
+            "certificate_hash": "628752676e21915677b19fd9da692fe69d0c3a14"
+          }
+        },
+        {
+          "client_id": "536576173180-2ud03mbsddqjs5b16tug6lu31lvn557a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6e5etF8hLM1REBTowhha-Tch0nZKnvVY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "536576173180-2ud03mbsddqjs5b16tug6lu31lvn557a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

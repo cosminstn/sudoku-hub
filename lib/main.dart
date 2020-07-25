@@ -1,50 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:sudoku_plus/pages/splashscreen_page.dart';
 
-import 'game_menu.dart';
+import 'pages/login_page.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Sudoku Plus',
+      title: 'Flutter Login',
       theme: ThemeData(
-        primarySwatch: Colors.cyan,
+        primarySwatch: Colors.blue,
       ),
-      home: GameMenu(),
+      home: SplashScreenPage(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  HomePage() : super();
+// class MyApp extends StatelessWidget {
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Sudoku Plus',
+//       theme: ThemeData(
+//         primarySwatch: Colors.cyan,
+//       ),
+//       home: GameMenu(),
+//     );
+//   }
+// }
 
-  @override
-  _HomePageState createState() => _HomePageState();
-}
+// class HomePage extends StatefulWidget {
+//   HomePage() : super();
 
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Sudoku Plus"),
-        ),
-        body: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              RaisedButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => GameMenu()));
-                },
-                child: Text("New Game"),
-              )
-            ],
-          ),
-        ));
-  }
-}
+//   @override
+//   _HomePageState createState() => _HomePageState();
+// }
+
+// class _HomePageState extends State<HomePage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//         appBar: AppBar(
+//           title: Text("Sudoku Plus"),
+//         ),
+//         body: Center(
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: <Widget>[
+//               RaisedButton(
+//                 onPressed: () {
+//                   Navigator.push(context,
+//                       MaterialPageRoute(builder: (context) => GameMenu()));
+//                 },
+//                 child: Text("New Game"),
+//               )
+//             ],
+//           ),
+//         ));
+//   }
+// }
