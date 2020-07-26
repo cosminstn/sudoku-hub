@@ -25,6 +25,8 @@ class _PlayPageState extends State<PlayPage> {
   DateTime _startTime;
   String _timePassedStr = '';
 
+  Timer _gameTimer;
+
   // #region Computed Properties
   String get _gameDifficultyStr {
     final diff = GameDifficultyExtension.getByNoClues(game.noClues);
@@ -59,7 +61,8 @@ class _PlayPageState extends State<PlayPage> {
     win = false;
     finished = false;
     _startTime = DateTime.now();
-    Timer.periodic(Duration(), (timer) {
+    _gameTimer = Timer.periodic(Duration(), (timer) {
+      if (!mounted) return;
       if (!finished && !win) {
         final now = DateTime.now();
         final minutes = now.difference(_startTime).inMinutes;
@@ -89,6 +92,13 @@ class _PlayPageState extends State<PlayPage> {
     return WillPopScope(
       child: Scaffold(
         backgroundColor: Colors.black,
+        appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: Colors.black, //change your color here
+          ),
+          title: Text("Sudoku Hub"),
+          centerTitle: true,
+        ),
         body: Stack(children: <Widget>[
           GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -98,15 +108,16 @@ class _PlayPageState extends State<PlayPage> {
               });
             },
           ),
-          // Title
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(50.0),
-              child: Text(!win ? "Sudoku Plus" : "Congratulations, you won!",
-                  style: TextStyle(
-                      fontSize: 20, color: win ? Colors.green : Colors.white)),
-            )
-          ]),
+          // Win text
+
+          // Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          //   Padding(
+          //     padding: const EdgeInsets.all(50.0),
+          //     child: Text(!win ? '' : "Congratulations, you won!",
+          //         style: TextStyle(
+          //             fontSize: 20, color: win ? Colors.green : Colors.white)),
+          //   )
+          // ]),
           // // Reload button
           // Row(
           //   mainAxisAlignment: MainAxisAlignment.end,
@@ -121,222 +132,234 @@ class _PlayPageState extends State<PlayPage> {
           //         ))
           //   ],
           // ),
-          Center(
-            child:
-                // Game board
-                FutureBuilder<void>(
-              future: checkGameCreated,
-              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return new CircularProgressIndicator();
-                  case ConnectionState.done:
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Padding(
-                                      padding: EdgeInsets.fromLTRB(10, 5, 5, 5),
-                                      child: Row(children: [
-                                        Icon(Icons.error_outline,
-                                            color: Colors.white),
-                                        Text(
-                                          _gameDifficultyStr,
-                                          style: TextStyle(
-                                              fontSize: 17,
-                                              color: Colors.white),
-                                        )
-                                      ]))
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Padding(
-                                      padding: EdgeInsets.fromLTRB(5, 5, 10, 5),
-                                      child: Row(children: [
-                                        Icon(
-                                          Icons.timer,
-                                          color: Colors.white,
-                                        ),
-                                        Text(_timePassedStr,
-                                            style: TextStyle(
-                                                fontSize: 17,
-                                                color: Colors.white))
-                                      ]))
-                                ],
-                              )
-                            ]),
-                        Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: game.board.matrix
-                                .map(
-                                  (list) => Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: list
-                                          .map(
-                                            (field) => Container(
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      if (focussed == field)
-                                                        focussed = null;
-                                                      else if (field.empty() ||
-                                                          !field.initial)
-                                                        focussed = field;
-                                                    });
-                                                  },
-                                                  child: Center(
-                                                      child: Text(
-                                                    field.empty()
-                                                        ? ""
-                                                        : field.value
-                                                            .toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 30,
-                                                        color: field.initial
-                                                            ? Theme.of(context)
-                                                                .primaryColor
-                                                            : Colors.white),
-                                                  )),
-                                                ),
-                                                width: widget.fieldSize,
-                                                height: widget.fieldSize,
-                                                decoration: BoxDecoration(
-                                                  color: () {
-                                                    if (focussed == field) {
-                                                      return Theme.of(context)
-                                                          .primaryColor;
-                                                    }
-                                                    if (field.empty()) {
-                                                      return Colors.white
-                                                          .withAlpha(50);
-                                                    }
+          Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Center(
+                child:
+                    // Game board
+                    FutureBuilder<void>(
+                  future: checkGameCreated,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<void> snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        return new CircularProgressIndicator();
+                      case ConnectionState.done:
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(10, 5, 5, 5),
+                                          child: Row(children: [
+                                            Icon(Icons.error_outline,
+                                                color: Colors.white),
+                                            Text(
+                                              _gameDifficultyStr,
+                                              style: TextStyle(
+                                                  fontSize: 17,
+                                                  color: Colors.white),
+                                            )
+                                          ]))
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: <Widget>[
+                                      Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(5, 5, 10, 5),
+                                          child: Row(children: [
+                                            Icon(
+                                              Icons.timer,
+                                              color: Colors.white,
+                                            ),
+                                            Text(_timePassedStr,
+                                                style: TextStyle(
+                                                    fontSize: 17,
+                                                    color: Colors.white))
+                                          ]))
+                                    ],
+                                  )
+                                ]),
+                            Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: game.board.matrix
+                                    .map(
+                                      (list) => Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: list
+                                              .map(
+                                                (field) => Container(
+                                                    child: InkWell(
+                                                      onTap: () async {
+                                                        setState(() {
+                                                          if (focussed == field)
+                                                            focussed = null;
+                                                          else if (field
+                                                                  .empty() ||
+                                                              !field.initial)
+                                                            focussed = field;
+                                                        });
+                                                      },
+                                                      child: Center(
+                                                          child: Text(
+                                                        field.empty()
+                                                            ? ""
+                                                            : field.value
+                                                                .toString(),
+                                                        style: TextStyle(
+                                                            fontSize: 30,
+                                                            color: field.initial
+                                                                ? Theme.of(
+                                                                        context)
+                                                                    .primaryColor
+                                                                : Colors.white),
+                                                      )),
+                                                    ),
+                                                    width: widget.fieldSize,
+                                                    height: widget.fieldSize,
+                                                    decoration: BoxDecoration(
+                                                      color: () {
+                                                        if (focussed == field) {
+                                                          return Theme.of(
+                                                                  context)
+                                                              .primaryColor;
+                                                        }
+                                                        if (field.empty()) {
+                                                          return Colors.white
+                                                              .withAlpha(50);
+                                                        }
 
-                                                    if (field.value !=
-                                                        game
-                                                            .solution
-                                                            .matrix[field.row]
-                                                                [field.col]
-                                                            .value) {
-                                                      if (field.initial) {
-                                                        return Colors.yellow;
-                                                      } else {
-                                                        return Colors.red;
-                                                      }
-                                                    } else
-                                                      return Colors.white
-                                                          .withAlpha(50);
-                                                  }(),
-                                                  border: Border(
-                                                      left: BorderSide(
-                                                          color: widget
-                                                              .borderColor,
-                                                          width:
-                                                              field.col % 3 == 0
+                                                        if (field.value !=
+                                                            game
+                                                                .solution
+                                                                .matrix[
+                                                                    field.row]
+                                                                    [field.col]
+                                                                .value) {
+                                                          if (field.initial) {
+                                                            return Colors
+                                                                .yellow;
+                                                          } else {
+                                                            return Colors.red;
+                                                          }
+                                                        } else
+                                                          return Colors.white
+                                                              .withAlpha(50);
+                                                      }(),
+                                                      border: Border(
+                                                          left: BorderSide(
+                                                              color: widget
+                                                                  .borderColor,
+                                                              width: field.col % 3 == 0
                                                                   ? 2
                                                                   : 0),
-                                                      right: BorderSide(
-                                                          color: widget
-                                                              .borderColor,
-                                                          width: field.col ==
-                                                                  Board.SIZE_BASE -
-                                                                      1
-                                                              ? 2
-                                                              : 0),
-                                                      top: BorderSide(
-                                                          color: widget
-                                                              .borderColor,
-                                                          width:
-                                                              field.row % 3 == 0
+                                                          right: BorderSide(
+                                                              color: widget
+                                                                  .borderColor,
+                                                              width: field.col ==
+                                                                      Board.SIZE_BASE -
+                                                                          1
                                                                   ? 2
                                                                   : 0),
-                                                      bottom: BorderSide(
-                                                          color: widget.borderColor,
-                                                          width: field.row == Board.SIZE_BASE - 1 ? 2 : 0)),
-                                                )),
-                                          )
-                                          .toList()),
-                                )
-                                .toList())
-                      ],
-                    );
-                  default:
-                    return Text('Starting a new game...');
-                }
-              },
-            ),
-          ),
-          // Number pad
-          (focussed != null && !game.win()
-              ? Column(mainAxisAlignment: MainAxisAlignment.end, children: <
-                  Widget>[
-                  Center(
-                      child: Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 5,
-                          childAspectRatio: 1.6,
-                          mainAxisSpacing: 1),
-                      itemCount: Board.SIZE_BASE + 1,
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.all(1),
-                      itemBuilder: (context, i) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: OutlineButton(
-                            child: (i == Board.SIZE_BASE
-                                ? Icon(Icons.delete,
-                                    color: HomePage.COLOR_ORANGE)
-                                : Text(
-                                    (i + 1).toString(),
-                                    style: TextStyle(
-                                        fontSize: 30,
-                                        color: HomePage.COLOR_ORANGE),
-                                  )),
-                            onPressed: () {
-                              if (focussed == null) {
-                                return;
-                              }
-                              if (!focussed.empty() && focussed.initial) {
-                                return;
-                              }
-                              setState(() {
-                                if (i == Board.SIZE_BASE)
-                                  game.board.matrix[focussed.row]
-                                          [focussed.col] =
-                                      Position.empty(
-                                          focussed.row, focussed.col);
-                                else
-                                  game.board.matrix[focussed.row]
-                                          [focussed.col] =
-                                      Position(
-                                          focussed.row, focussed.col, i + 1);
-                                focussed = null;
-                              });
-                              checkBoard();
-                            },
-                          ),
+                                                          top: BorderSide(
+                                                              color: widget
+                                                                  .borderColor,
+                                                              width: field.row % 3 == 0
+                                                                  ? 2
+                                                                  : 0),
+                                                          bottom: BorderSide(
+                                                              color: widget.borderColor,
+                                                              width: field.row == Board.SIZE_BASE - 1 ? 2 : 0)),
+                                                    )),
+                                              )
+                                              .toList()),
+                                    )
+                                    .toList())
+                          ],
                         );
-                      },
-                    ),
-                  ))
-                ])
-              : Container()),
+                      default:
+                        return Text('Starting a new game...');
+                    }
+                  },
+                ),
+              ),
+              Column(mainAxisAlignment: MainAxisAlignment.end, children: <
+                  Widget>[
+                Center(
+                    child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 5,
+                        childAspectRatio: 1.6,
+                        mainAxisSpacing: 1),
+                    itemCount: Board.SIZE_BASE + 1,
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.all(1),
+                    itemBuilder: (context, i) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                        child: OutlineButton(
+                          child: (i == Board.SIZE_BASE
+                              ? Icon(Icons.delete, color: HomePage.COLOR_ORANGE)
+                              : Text(
+                                  (i + 1).toString(),
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      color: HomePage.COLOR_ORANGE),
+                                )),
+                          onPressed: () {
+                            if (focussed == null) {
+                              return;
+                            }
+                            if (!focussed.empty() && focussed.initial) {
+                              return;
+                            }
+                            setState(() {
+                              if (i == Board.SIZE_BASE)
+                                game.board.matrix[focussed.row][focussed.col] =
+                                    Position.empty(focussed.row, focussed.col);
+                              else
+                                game.board.matrix[focussed.row][focussed.col] =
+                                    Position(focussed.row, focussed.col, i + 1);
+                              focussed = null;
+                            });
+                            checkBoard();
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ))
+              ])
+            ],
+          )
+          // Number pad
         ]),
       ),
       onWillPop: () async {
         return true;
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _gameTimer.cancel();
+    super.dispose();
   }
 }
 
