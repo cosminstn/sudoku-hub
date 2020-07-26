@@ -12,19 +12,31 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-            color: Colors.white,
-            child: Center(
-                child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                  FlutterLogo(size: 50),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  _signInButton()
-                ]))));
+        appBar: AppBar(
+          brightness: Brightness.dark,
+          backgroundColor: Colors.black,
+        ),
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
+              child: Container(
+                  child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                    Container(
+                        width: 200,
+                        padding: EdgeInsets.fromLTRB(0, 100, 0, 0),
+                        // child: Icon(Icons.hot_tub, size: 50),
+                        child: Image.asset('assets/homepage_logo.png')),
+                    Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[_signInButton()],
+                    )
+                  ]))),
+        ));
   }
 
   Widget _signInButton() {
@@ -34,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
         signInWithGoogle()
             .whenComplete(() => {
                   Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) {
+                      .pushReplacement(MaterialPageRoute(builder: (context) {
                     return HomePage();
                   }))
                 })
@@ -58,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                 'Sign in with Google',
                 style: TextStyle(
                   fontSize: 20,
-                  color: Colors.grey,
+                  color: Colors.orange,
                 ),
               ),
             )
