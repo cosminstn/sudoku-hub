@@ -31,6 +31,7 @@ class HomePage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
                             _newGameButton(context),
+                            _statsButton(context),
                             _settingsButton(context),
                             _signOutButton(context)
                           ],
@@ -79,6 +80,10 @@ class HomePage extends StatelessWidget {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => PlayPage()));
     });
+  }
+
+  Widget _statsButton(BuildContext context) {
+    return _buildStandardButton(context, Icons.history, 'Statistics', () {});
   }
 
   Widget _settingsButton(BuildContext context) {
