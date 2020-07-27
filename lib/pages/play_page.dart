@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:sudoku_plus/api/puzzle.dart';
+import 'package:sudoku_plus/models/GameRecording.dart';
 
 class PlayPage extends StatefulWidget {
   final double fieldSize = 40;
@@ -23,6 +24,8 @@ class _PlayPageState extends State<PlayPage> {
   Future checkGameCreated;
   DateTime _startTime;
   String _timePassedStr = '';
+
+  GameRecording _gameRecording;
 
   Timer _gameTimer;
 
@@ -60,7 +63,8 @@ class _PlayPageState extends State<PlayPage> {
     win = false;
     finished = false;
     _startTime = DateTime.now();
-    _gameTimer = Timer.periodic(Duration(), (timer) {
+    _gameRecording = GameRecording(game.board, _startTime);
+    _gameTimer = Timer.periodic(Duration(milliseconds: 50), (timer) {
       if (!mounted) return;
       if (!finished && !win) {
         final now = DateTime.now();
@@ -107,16 +111,7 @@ class _PlayPageState extends State<PlayPage> {
               });
             },
           ),
-          // Win text
 
-          // Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          //   Padding(
-          //     padding: const EdgeInsets.all(50.0),
-          //     child: Text(!win ? '' : "Congratulations, you won!",
-          //         style: TextStyle(
-          //             fontSize: 20, color: win ? Colors.green : Colors.white)),
-          //   )
-          // ]),
           // // Reload button
           // Row(
           //   mainAxisAlignment: MainAxisAlignment.end,
@@ -135,6 +130,19 @@ class _PlayPageState extends State<PlayPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
+              // Win text
+
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(50.0),
+                      child: Text(!win ? '' : "Congratulations, you won!",
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: win ? Colors.green : Colors.white)),
+                    )
+                  ]),
               Expanded(
                   child: Center(
                 child:
@@ -307,12 +315,21 @@ class _PlayPageState extends State<PlayPage> {
                     return;
                   }
                   setState(() {
-                    if (i == Board.SIZE_BASE)
-                      game.board.matrix[focussed.row][focussed.col] =
-                          Position.empty(focussed.row, focussed.col);
-                    else
-                      game.board.matrix[focussed.row][focussed.col] =
-                          Position(focussed.row, focussed.col, i + 1);
+                    final timestamp =
+                        DateTime.now().difference(_startTime).inMilliseconds;
+
+                    if (i == Board.SIZE_BASE) {
+                      final pos = Position.empty(focussed.row, focussed.col);
+                      game.board.matrix[focussed.row][focussed.col] = pos;
+                      _gameRecording.addMove(
+                          GameRecordingMove(timestamp, MoveType.DELETE, pos));
+                    } else {
+                      final pos = Position(focussed.row, focussed.col, i + 1);
+                      game.board.matrix[focussed.row][focussed.col] = pos;
+                      _gameRecording.addMove(
+                          GameRecordingMove(timestamp, MoveType.SET, pos));
+                    }
+
                     focussed = null;
                   });
                   checkBoard();
