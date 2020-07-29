@@ -33,6 +33,9 @@ dependencies:
     ordered_set: ^2.0.0
     # Used to simplify overriding: == and hashCode
     equatable: ^1.2.3
+    # Aparent firebase_core nu e necesar pentru cloud_firestore. E necesar doar daca vrem sa ne conectam la aplicatii firebase diferite.
+    firebase_core: ^0.4.5
+    cloud_firestore: ^0.13.7
 
 dev_dependencies:
     flutter_test:

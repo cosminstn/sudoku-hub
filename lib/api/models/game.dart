@@ -28,11 +28,13 @@ class Game {
   }
 }
 
-enum GameDifficulty { EASY, MEDIUM, HARD, EVIL }
+enum GameDifficulty { DEV_EASY, EASY, MEDIUM, HARD, EVIL }
 
 extension GameDifficultyExtension on GameDifficulty {
   int get minClues {
     switch (this) {
+      case GameDifficulty.DEV_EASY:
+        return 77;
       case GameDifficulty.EASY:
         return 36;
       case GameDifficulty.MEDIUM:
@@ -48,6 +50,8 @@ extension GameDifficultyExtension on GameDifficulty {
 
   int get maxClues {
     switch (this) {
+      case GameDifficulty.DEV_EASY:
+        return 80;
       case GameDifficulty.EASY:
         return 46;
       case GameDifficulty.MEDIUM:
@@ -63,6 +67,8 @@ extension GameDifficultyExtension on GameDifficulty {
 
   String get value {
     switch (this) {
+      case GameDifficulty.DEV_EASY:
+        return 'DEV EASY';
       case GameDifficulty.EASY:
         return 'Easy';
       case GameDifficulty.MEDIUM:

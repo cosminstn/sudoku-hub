@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:sudoku_plus/api/puzzle.dart';
 import 'package:sudoku_plus/models/GameRecording.dart';
+import 'package:sudoku_plus/pages/won_page.dart';
 
 class PlayPage extends StatefulWidget {
   final double fieldSize = 40;
@@ -58,7 +59,7 @@ class _PlayPageState extends State<PlayPage> {
     if (game != null) {
       return;
     }
-    game = await generate(difficulty: GameDifficulty.EASY);
+    game = await generate(difficulty: GameDifficulty.DEV_EASY);
     focussed = null;
     win = false;
     finished = false;
@@ -85,6 +86,7 @@ class _PlayPageState extends State<PlayPage> {
       if (game.win()) {
         setState(() {
           win = true;
+          // redirect to
         });
       }
     }
@@ -116,14 +118,7 @@ class _PlayPageState extends State<PlayPage> {
           // Row(
           //   mainAxisAlignment: MainAxisAlignment.end,
           //   children: <Widget>[
-          //     Padding(
-          //         padding:
-          //             const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
-          //         child: IconButton(
-          //           icon: Icon(Icons.autorenew),
-          //           onPressed: () =>
-          //               setState(() async => await checkGameInitializedAsync()),
-          //         ))
+
           //   ],
           // ),
           Column(
@@ -132,17 +127,11 @@ class _PlayPageState extends State<PlayPage> {
             children: <Widget>[
               // Win text
 
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(50.0),
-                      child: Text(!win ? '' : "Congratulations, you won!",
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: win ? Colors.green : Colors.white)),
-                    )
-                  ]),
+              // Row(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: <Widget>[
+              //
+              //     ]),
               Expanded(
                   child: Center(
                 child:
@@ -333,6 +322,10 @@ class _PlayPageState extends State<PlayPage> {
                     focussed = null;
                   });
                   checkBoard();
+                  if (win) {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (BuildContext context) => WonPage()));
+                  }
                 },
               ),
             );
